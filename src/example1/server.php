@@ -1,8 +1,8 @@
 <?php
 
 // pipe a connection into itself
+require \Application\Helper\FileSystem::normalizePathSeparator(__DIR__.'/../../vendor/autoload.php');
 
-require __DIR__.'/../../vendor/autoload.php';
 
 /** @var $loop React\EventLoop\StreamSelectLoop */
 $loop = React\EventLoop\Factory::create();
