@@ -4,9 +4,6 @@ namespace Application\Helper;
 
 class FileSystem {
 
-
-
-
     public static function normalizePathSeparator($pathToNormalize) {
         $systemSeparator    = PATH_SEPARATOR;
         if( $systemSeparator !== '/') {
