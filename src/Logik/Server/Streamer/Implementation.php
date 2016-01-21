@@ -1,5 +1,5 @@
 <?php
-namespace Application\Logik\Server\SendEcho;
+namespace Application\Logik\Server\Streamer;
 
 use Symfony\Component\Console\Output;
 /**
@@ -20,17 +20,17 @@ class Implementation
         $socket = new \React\Socket\Server($loop);
 
         // pipe a connection into itself
-        $socket->on('connection', function (\React\Socket\Connection $conn) use($output) {
+        $socket->on('connection', function (\React\Socket\Connection $conn) use($output, $loop) {
             
         	$output->writeln( 'CONNECTION ESTABLISHED: '.$conn->getRemoteAddress() );
-            $conn->pipe($conn);
-
-            $conn->on('data', function ($data) use ($conn, $output) {
-            	$conn->write('some infirmation ...');
-            	
-            	
-                $output->writeln($data);
-            });
+        	//$infiniteStreamHandle	= fopen('/tmp/random', 'r');
+        	$infiniteStreamHandle	= fopen('/dev/urandom', 'r');
+        	
+        	$fileToStream = new \React\Stream\Stream($infiniteStreamHandle, $loop);
+            $output->writeln( 'streaming ...' );
+        	//$conn->pipe($infiniteStreamHandle);
+        	$fileToStream->pipe($conn);
+            
 
         });
 

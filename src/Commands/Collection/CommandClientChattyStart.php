@@ -10,12 +10,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class CommandClientStart extends ConsoleCommand
+class CommandClientChattyStart extends ConsoleCommand
 {
     protected function configure()
     {
         $this
-            ->setName('client:start')
+            ->setName('client:chatty:start')
             ->setDescription('Starts the "clients server')
             ->addArgument(
                 'number',
@@ -31,7 +31,7 @@ class CommandClientStart extends ConsoleCommand
         $numberOfForks = $input->getArgument('number');
 
         $manager        = new \Spork\ProcessManager();
-        $batch          = range(0,$numberOfForks);
+        $batch          = range(1,$numberOfForks);
 
         $callback   = function($batchItem, $batchIndex, array $batch, \Spork\SharedMemory $sharedMemory) use($output) {
             $pid    = getmypid();
@@ -41,57 +41,23 @@ class CommandClientStart extends ConsoleCommand
             $socket = fsockopen('localhost', 4000);
             stream_set_blocking($socket,0);
             while(true) {
-                fwrite($socket, "{$pid}:{$batchItem}: {$count}\n");
+            	$message	= "{$pid}:{$batchItem}: {$count}\n";
+                fwrite($socket, $message);
+                $output->writeln('SEND: '. $message);
+                
+                // wait 0.5 seconds
+                usleep(500000);
+                
                 $read   = fread($socket, 9999);
                 if($read !== false ) {
                     $output->writeln('RECEIVED: '. $read);
                 }
                 $count++;
             }
-            /*
-            $telnetStatus   = null;;
-            $process    = new Process('telnet localhost 4000');
-            $process->run();
-
-            $output->writeln( 'GET CMD1: '. var_export( $process->getOutput() , true) );
-            //while($process->isRunning()) {
-            $counter=0;
-            while(true) {
-                //$process->setInput("asd");
-                sleep(1);
-                $output->writeln( 'GET CMD2: '. var_export( $process->getOutput() , true) );
-                $process->clearOutput();
-
-                $process->setInput($pid.' '.$counter."\n");
-$counter++;
-            }
-
-            $telnetStatus = $process->getExitCode();
-
-
-
-*/
-            /*
-            try {
-                $process->mustRun();
-
-            } catch(ProcessFailedException $pfe) {
-                $telnetStatus   = $pfe->getMessage();
-            }
-            */
-            $forkMessage    = <<<MESSAGE
-----------------------------------
-BATCH-ITEM:    {$batchItem}
-BATCH-INDEX:   {$batchIndex}
-TELNET-STATUS: {$telnetStatus}
-----------------------------------
-MESSAGE;
-
-            $output->writeln($forkMessage);
-
 
             return "[PID: {$pid}][BATCH: {$batchIndex}]";
         };
+        
         $strategy       = new \Spork\Batch\Strategy\ChunkStrategy($numberOfForks, true);
 
         /** @var \Spork\Fork $result */
