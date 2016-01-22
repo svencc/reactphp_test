@@ -26,10 +26,8 @@ class Implementation
             $conn->pipe($conn);
 
             $conn->on('data', function ($data) use ($conn, $output) {
-            	$conn->write('some infirmation ...');
-            	
-            	
-                $output->writeln($data);
+            	$conn->write('some additional information from data-event-handler ...');
+                $output->writeln("Server received: {$data}");
             });
 
         });

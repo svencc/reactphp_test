@@ -19,7 +19,7 @@ class CommandServerEchoStart extends ConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $echoServer = new \Application\Logik\Server\Streamer\Implementation();
+        $echoServer = new \Application\Logik\Server\SendEcho\Implementation();
         $echoServer->start($output);
     }
 }

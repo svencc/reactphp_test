@@ -43,14 +43,14 @@ class CommandClientChattyStart extends ConsoleCommand
             while(true) {
             	$message	= "{$pid}:{$batchItem}: {$count}\n";
                 fwrite($socket, $message);
-                $output->writeln('SEND: '. $message);
+                $output->writeln('CLIENT SEND: '. $message);
                 
                 // wait 0.5 seconds
                 usleep(500000);
                 
                 $read   = fread($socket, 9999);
                 if($read !== false ) {
-                    $output->writeln('RECEIVED: '. $read);
+                    $output->writeln("CLIENT RECEIVED: {$read}");
                 }
                 $count++;
             }
