@@ -1,3 +1,9 @@
 .idea
 /vagrant/.vagrant
+.buildpath
+.project
+.settings/
+composer.lock
+vendor/
+
 # Created by .ignore support plugin (hsz.mobi)
